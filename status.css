@@ -1,0 +1,102 @@
+:root {
+  --ground: #faf8f5;
+  --card: #ffffff;
+  --ink: #211e19;
+  --muted: #6e675d;
+  --faint: #9a9388;
+  --line: #ece7de;
+  --line-2: #f3efe8;
+  --brand: #f26c1f;
+  --op: #2fa36b;
+  --op-soft: #e9f5ee;
+  --op-line: #cfe9da;
+  --deg: #d9982f;
+  --deg-soft: #fbf1de;
+  --deg-line: #f0dcae;
+  --down: #d8503f;
+  --down-soft: #fbe9e6;
+  --down-line: #f2c9c2;
+  --maint: #3b6fd4;
+  --maint-soft: #e8eefb;
+  --maint-line: #cdd9f5;
+  --serif: "Iowan Old Style", "Palatino Linotype", Palatino, Georgia, serif;
+  --sans: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  --mono: ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+}
+* { box-sizing: border-box; }
+html, body { margin: 0; }
+body { background: var(--ground); color: var(--ink); font-family: var(--sans); line-height: 1.5; min-height: 100vh; -webkit-font-smoothing: antialiased; }
+.sp-wrap { max-width: 760px; margin: 0 auto; padding: 0 20px 72px; }
+
+.sp-top { display: flex; align-items: center; justify-content: space-between; gap: 16px; padding: 22px 0 24px; }
+.sp-brand { display: flex; align-items: center; gap: 10px; }
+.sp-mark { width: 26px; height: 26px; border-radius: 8px; background: var(--brand); flex: none; box-shadow: 0 1px 3px rgba(242, 108, 31, 0.35); }
+.sp-name { font-weight: 600; font-size: 16px; letter-spacing: -0.01em; }
+.sp-name b { color: var(--brand); font-weight: 600; }
+.sp-name-sub { color: var(--faint); font-weight: 500; }
+.sp-home { font-size: 13px; color: var(--muted); text-decoration: none; border-bottom: 1px solid var(--line); padding-bottom: 1px; }
+.sp-home:hover { color: var(--brand); border-color: var(--brand); }
+
+/* alert note (stale / unreachable) */
+#sp-note { border-radius: 12px; padding: 12px 16px; font-size: 13.5px; margin-bottom: 14px; }
+#sp-note.warn { background: var(--deg-soft); border: 1px solid var(--deg-line); color: #8a5e12; }
+#sp-note.bad { background: var(--down-soft); border: 1px solid var(--down-line); color: #9c3021; }
+
+.sp-banner { border-radius: 14px; padding: 22px 24px; display: flex; align-items: center; gap: 16px; border: 1px solid var(--line); background: var(--card); }
+.sp-banner.op { background: var(--op-soft); border-color: var(--op-line); }
+.sp-banner.deg { background: var(--deg-soft); border-color: var(--deg-line); }
+.sp-banner.down { background: var(--down-soft); border-color: var(--down-line); }
+.sp-banner.maint { background: var(--maint-soft); border-color: var(--maint-line); }
+.sp-orb { width: 14px; height: 14px; border-radius: 50%; background: var(--muted); flex: none; }
+.sp-banner.op .sp-orb { background: var(--op); box-shadow: 0 0 0 4px rgba(47, 163, 107, 0.16); }
+.sp-banner.deg .sp-orb { background: var(--deg); box-shadow: 0 0 0 4px rgba(217, 152, 47, 0.16); }
+.sp-banner.down .sp-orb { background: var(--down); box-shadow: 0 0 0 4px rgba(216, 80, 63, 0.16); }
+.sp-banner.maint .sp-orb { background: var(--maint); box-shadow: 0 0 0 4px rgba(59, 111, 212, 0.16); }
+.sp-banner-body { flex: 1; min-width: 0; }
+.sp-banner h1 { font-family: var(--serif); font-weight: 400; font-size: 27px; letter-spacing: -0.01em; margin: 0; text-wrap: balance; }
+.sp-banner.op h1 { color: #1c6c48; }
+.sp-banner.deg h1 { color: #8a5e12; }
+.sp-banner.down h1 { color: #9c3021; }
+.sp-banner.maint h1 { color: #274a92; }
+.sp-updated { font-family: var(--mono); font-size: 11.5px; color: var(--muted); margin-top: 3px; }
+
+.sp-sec-head { margin: 34px 4px 12px; }
+.sp-sec-head h2 { font-size: 12px; font-weight: 600; letter-spacing: 0.06em; text-transform: uppercase; color: var(--muted); margin: 0; }
+
+.sp-services { display: flex; flex-direction: column; gap: 10px; }
+.sp-svc { background: var(--card); border: 1px solid var(--line); border-radius: 12px; padding: 15px 18px; display: flex; align-items: center; justify-content: space-between; gap: 14px; }
+.sp-svc-name { font-size: 15px; font-weight: 600; letter-spacing: -0.01em; }
+.sp-svc-right { display: flex; align-items: center; gap: 14px; }
+.sp-uptime { font-family: var(--mono); font-size: 11.5px; color: var(--faint); }
+.sp-pill { display: inline-flex; align-items: center; gap: 6px; font-size: 12px; font-weight: 600; padding: 4px 10px 4px 8px; border-radius: 999px; white-space: nowrap; }
+.sp-pill .dot { width: 7px; height: 7px; border-radius: 50%; }
+.sp-pill.op { background: var(--op-soft); color: #1c6c48; } .sp-pill.op .dot { background: var(--op); }
+.sp-pill.deg { background: var(--deg-soft); color: #8a5e12; } .sp-pill.deg .dot { background: var(--deg); }
+.sp-pill.down { background: var(--down-soft); color: #9c3021; } .sp-pill.down .dot { background: var(--down); }
+.sp-pill.maint { background: var(--maint-soft); color: #274a92; } .sp-pill.maint .dot { background: var(--maint); }
+
+.sp-incidents { display: flex; flex-direction: column; gap: 16px; }
+.sp-inc { background: var(--card); border: 1px solid var(--line); border-radius: 12px; overflow: hidden; }
+.sp-inc-head { padding: 15px 18px 13px; border-bottom: 1px solid var(--line-2); display: flex; align-items: flex-start; justify-content: space-between; gap: 12px; }
+.sp-inc-title { font-size: 15px; font-weight: 600; letter-spacing: -0.01em; }
+.sp-inc-scope { font-size: 12px; color: var(--muted); margin-top: 3px; }
+.sp-inc-date { font-family: var(--mono); font-size: 11px; color: var(--faint); white-space: nowrap; text-align: right; }
+.sp-u { display: grid; grid-template-columns: 96px 1fr; gap: 14px; padding: 11px 18px; border-top: 1px solid var(--line-2); }
+.sp-u:first-child { border-top: 0; }
+.sp-u-stage { font-size: 11px; font-weight: 700; letter-spacing: 0.04em; text-transform: uppercase; padding-top: 1px; }
+.sp-u-stage.resolved, .sp-u-stage.completed { color: var(--op); }
+.sp-u-stage.monitoring, .sp-u-stage.in_progress { color: var(--maint); }
+.sp-u-stage.identified, .sp-u-stage.scheduled { color: var(--deg); }
+.sp-u-stage.investigating { color: var(--down); }
+.sp-u-body { font-size: 13.5px; color: #3a352d; }
+.sp-u-time { display: block; font-family: var(--mono); font-size: 10.5px; color: var(--faint); margin-top: 4px; }
+
+.sp-empty { font-size: 13px; color: var(--muted); padding: 2px 4px; }
+
+.sp-foot { margin-top: 40px; padding-top: 20px; border-top: 1px solid var(--line); display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 12px; font-size: 12.5px; color: var(--muted); }
+.sp-foot-brand { font-family: var(--mono); font-size: 10.5px; color: var(--faint); }
+
+@media (max-width: 560px) {
+  .sp-banner h1 { font-size: 22px; }
+  .sp-u { grid-template-columns: 1fr; gap: 3px; }
+}

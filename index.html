@@ -1,0 +1,49 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="robots" content="index" />
+    <title>PostCoaster Status</title>
+    <meta name="description" content="Live operational status for PostCoaster — scheduled publishing, AI drafting, autopilot, campaigns, and the app." />
+    <link rel="stylesheet" href="./status.css" />
+  </head>
+  <body>
+    <div class="sp">
+      <div class="sp-wrap">
+        <header class="sp-top">
+          <div class="sp-brand">
+            <span class="sp-mark" aria-hidden="true"></span>
+            <span class="sp-name"><b>Post</b>Coaster <span class="sp-name-sub">Status</span></span>
+          </div>
+          <a class="sp-home" href="https://app.postcoaster.com" rel="noopener">Open PostCoaster →</a>
+        </header>
+
+        <div id="sp-note" hidden></div>
+
+        <section class="sp-banner" id="sp-banner" aria-live="polite">
+          <span class="sp-orb" id="sp-orb" aria-hidden="true"></span>
+          <div class="sp-banner-body">
+            <h1 id="sp-headline">Loading status…</h1>
+            <div class="sp-updated" id="sp-updated"></div>
+          </div>
+        </section>
+
+        <div class="sp-sec-head"><h2>Services</h2></div>
+        <div class="sp-services" id="sp-services"></div>
+
+        <div class="sp-sec-head" id="sp-incidents-head" hidden><h2>Active incidents</h2></div>
+        <div class="sp-incidents" id="sp-incidents"></div>
+
+        <div class="sp-sec-head" id="sp-recent-head" hidden><h2>Recent incidents</h2></div>
+        <div class="sp-incidents" id="sp-recent"></div>
+
+        <footer class="sp-foot">
+          <div id="sp-foot-note">Monitored independently of PostCoaster.</div>
+          <div class="sp-foot-brand">status.postcoaster.com</div>
+        </footer>
+      </div>
+    </div>
+    <script src="./render.js" defer></script>
+  </body>
+</html>

@@ -1,0 +1,15 @@
+{
+  "polledAt": "2026-07-26T12:00:00.000Z",
+  "appReachable": true,
+  "source": "live",
+  "overall": "operational",
+  "note": null,
+  "services": [
+    { "key": "app", "label": "PostCoaster app", "state": "operational", "uptime90d": 99.98 },
+    { "key": "publishing", "label": "Scheduled publishing", "state": "operational", "uptime90d": 99.82 },
+    { "key": "ai_drafting", "label": "AI drafting", "state": "operational", "uptime90d": 99.95 },
+    { "key": "autopilot", "label": "Autopilot", "state": "operational", "uptime90d": 99.9 },
+    { "key": "campaigns", "label": "Campaigns", "state": "operational", "uptime90d": 99.97 }
+  ],
+  "incidents": []
+}
