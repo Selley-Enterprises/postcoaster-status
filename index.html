@@ -3,46 +3,42 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <meta name="robots" content="index" />
     <title>PostCoaster Status</title>
-    <meta name="description" content="Live operational status for PostCoaster — scheduled publishing, AI drafting, autopilot, campaigns, and the app." />
+    <meta
+      name="description"
+      content="Live operational status for PostCoaster — the app, scheduled publishing, AI drafting, Autopilot, and campaigns."
+    />
+    <link rel="icon" href="./postcoaster-mark.svg" />
     <link rel="stylesheet" href="./status.css" />
   </head>
   <body>
-    <div class="sp">
-      <div class="sp-wrap">
-        <header class="sp-top">
-          <div class="sp-brand">
-            <span class="sp-mark" aria-hidden="true"></span>
-            <span class="sp-name"><b>Post</b>Coaster <span class="sp-name-sub">Status</span></span>
+    <div class="pcs-page">
+      <header class="pcs-header">
+        <a class="pcs-brand" href="https://www.postcoaster.com/" aria-label="PostCoaster home">
+          <img src="./postcoaster-mark.svg" alt="" width="38" height="38" />
+          <span><b>Post</b><strong>Coaster</strong></span>
+        </a>
+        <nav aria-label="Status page links">
+          <a href="https://www.postcoaster.com/">Visit website</a>
+          <a class="pcs-app-link" href="https://app.postcoaster.com/">Open app</a>
+        </nav>
+      </header>
+
+      <main class="pcs-main">
+        <div class="pcs-intro">
+          <div>
+            <p class="pcs-eyebrow">PostCoaster status</p>
+            <h1>Service health at a glance</h1>
           </div>
-          <a class="sp-home" href="https://app.postcoaster.com" rel="noopener">Open PostCoaster →</a>
-        </header>
+          <p class="pcs-updated" id="pcs-updated"></p>
+        </div>
+        <div id="pcs-body"></div>
+      </main>
 
-        <div id="sp-note" hidden></div>
-
-        <section class="sp-banner" id="sp-banner" aria-live="polite">
-          <span class="sp-orb" id="sp-orb" aria-hidden="true"></span>
-          <div class="sp-banner-body">
-            <h1 id="sp-headline">Loading status…</h1>
-            <div class="sp-updated" id="sp-updated"></div>
-          </div>
-        </section>
-
-        <div class="sp-sec-head"><h2>Services</h2></div>
-        <div class="sp-services" id="sp-services"></div>
-
-        <div class="sp-sec-head" id="sp-incidents-head" hidden><h2>Active incidents</h2></div>
-        <div class="sp-incidents" id="sp-incidents"></div>
-
-        <div class="sp-sec-head" id="sp-recent-head" hidden><h2>Recent incidents</h2></div>
-        <div class="sp-incidents" id="sp-recent"></div>
-
-        <footer class="sp-foot">
-          <div id="sp-foot-note">Monitored independently of PostCoaster.</div>
-          <div class="sp-foot-brand">status.postcoaster.com</div>
-        </footer>
-      </div>
+      <footer class="pcs-footer">
+        <span>PostCoaster keeps your social content moving.</span>
+        <a href="mailto:support@postcoaster.com">support@postcoaster.com</a>
+      </footer>
     </div>
     <script src="./render.js" defer></script>
   </body>

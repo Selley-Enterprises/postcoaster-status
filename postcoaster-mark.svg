@@ -1,0 +1,9 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" role="img" aria-labelledby="title desc">
+  <title id="title">PostCoaster mark</title>
+  <desc id="desc">Two coral rounded rails forming the PostCoaster brand mark.</desc>
+  <rect width="64" height="64" rx="16" fill="#fff8f5"/>
+  <g transform="translate(14 14) rotate(-35 18 18)">
+    <rect x="3" y="7" width="30" height="14" rx="7" fill="#f45f58"/>
+    <rect x="13" y="22" width="30" height="14" rx="7" fill="#f58a74"/>
+  </g>
+</svg>
