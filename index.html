@@ -10,6 +10,7 @@
     />
     <link rel="icon" href="./postcoaster-mark.svg" />
     <link rel="stylesheet" href="./status.css" />
+    <link rel="stylesheet" href="./subscribe.css" />
   </head>
   <body>
     <div class="pcs-page">
@@ -33,6 +34,27 @@
           <p class="pcs-updated" id="pcs-updated"></p>
         </div>
         <div id="pcs-body"></div>
+
+        <section class="pcs-subscribe" aria-labelledby="subscribe-heading">
+          <h2 id="subscribe-heading">Get status updates by email</h2>
+          <p>We'll email you when there's an incident or scheduled maintenance — and again when it's resolved.</p>
+          <form class="pcs-subscribe-row" id="pcs-subscribe-form" novalidate>
+            <label class="pcs-visually-hidden" for="pcs-subscribe-email">Email address</label>
+            <input
+              type="email"
+              id="pcs-subscribe-email"
+              name="email"
+              placeholder="you@company.com"
+              autocomplete="email"
+              required
+            />
+            <button type="submit" id="pcs-subscribe-submit">Subscribe</button>
+          </form>
+          <p class="pcs-subscribe-note" id="pcs-subscribe-note" role="status" aria-live="polite" hidden></p>
+          <p class="pcs-subscribe-fine">
+            We'll send a confirmation email first. Every update has a one-click unsubscribe link.
+          </p>
+        </section>
       </main>
 
       <footer class="pcs-footer">
