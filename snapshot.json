@@ -1,5 +1,5 @@
 {
-  "polledAt": "2026-08-17T03:35:33.706Z",
+  "polledAt": "2026-08-17T04:22:22.401Z",
   "appReachable": true,
   "source": "live",
   "overall": "operational",
@@ -21,7 +21,7 @@
       "key": "ai_drafting",
       "label": "AI drafting",
       "state": "operational",
-      "uptime90d": 99.23
+      "uptime90d": 99.06
     },
     {
       "key": "autopilot",
@@ -33,7 +33,7 @@
       "key": "campaigns",
       "label": "Campaigns",
       "state": "operational",
-      "uptime90d": 98.65
+      "uptime90d": 98.48
     }
   ],
   "incidents": []
