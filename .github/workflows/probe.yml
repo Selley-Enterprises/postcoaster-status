@@ -4,7 +4,7 @@ name: probe
 # Vercel + Supabase) and commits the snapshot the status page renders.
 on:
   schedule:
-    - cron: '*/5 * * * *' # GitHub may delay/coalesce; ~5 min is the effective floor
+    - cron: '0 0 * * *' # once per day at 00:00 UTC
   workflow_dispatch: {}
 
 permissions:
