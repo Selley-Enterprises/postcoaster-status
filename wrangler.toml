@@ -11,6 +11,20 @@ compatibility_date = "2025-01-01"
 # open internet; the handler is additionally gated by PROBE_TRIGGER_SECRET.
 workers_dev = false
 
+# Workers Logs. This lives in the repo rather than only in the Cloudflare
+# dashboard because wrangler.toml is the source of truth on a git-triggered
+# deploy: any observability setting toggled in the dashboard is overwritten by
+# this file on the next push. Logs let us confirm the cron actually fired and
+# diagnose snapshot commit failures (GitHub API errors, bad/expired token).
+[observability]
+enabled = true
+
+[observability.logs]
+enabled = true
+# Emit a log per invocation (request/response + metadata) so a silent cron is
+# distinguishable from a cron that ran and failed.
+invocation_logs = true
+
 # Poll every ~5 minutes (free of GitHub Actions billing now that polling runs
 # here rather than in Actions).
 [triggers]
