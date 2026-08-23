@@ -13,6 +13,13 @@
 export const DEFAULT_APP_URL = 'https://app.postcoaster.com';
 export const TIMEOUT_MS = 10_000;
 
+// How stale the committed snapshot may get before we re-commit it even though
+// nothing meaningful changed. The page shows `polledAt`, so without a heartbeat
+// a long healthy stretch would make the monitor look abandoned. At a 5-minute
+// poll this caps writes at ~24 commits/day instead of ~288 (one per poll), which
+// keeps us far under GitHub Pages' build-rate limits.
+export const HEARTBEAT_MS = 60 * 60 * 1000; // 1 hour
+
 const STATE_RANK = { operational: 0, maintenance: 1, degraded: 2, down: 3 };
 const worst = (a, b) => (STATE_RANK[b] > STATE_RANK[a] ? b : a);
 
@@ -53,6 +60,56 @@ export function buildMonitorSnapshot({ statusResult, healthOk, previous, now }) 
     services: Array.isArray(services) ? services : [],
     incidents: Array.isArray(incidents) ? incidents : [],
   };
+}
+
+// --- Change detection -------------------------------------------------------
+//
+// `polledAt` is a fresh timestamp on every run, so comparing serialized
+// snapshots byte-for-byte always reports "changed" and commits on every poll.
+// Everything else in the snapshot — `source`, `overall`, `appReachable`,
+// `note`, `services`, `incidents` — is meaningful and must be compared.
+
+// Stable, order-insensitive serialization so key ordering (e.g. a re-parsed
+// snapshot.json vs. a freshly built object) never registers as a change.
+function canonicalize(value) {
+  if (Array.isArray(value)) return value.map(canonicalize);
+  if (value && typeof value === 'object') {
+    const out = {};
+    for (const key of Object.keys(value).sort()) out[key] = canonicalize(value[key]);
+    return out;
+  }
+  return value;
+}
+
+// A string identity for a snapshot that deliberately ignores `polledAt`.
+// Returns null for anything that isn't a snapshot-shaped object.
+export function snapshotFingerprint(snapshot) {
+  if (!snapshot || typeof snapshot !== 'object') return null;
+  const { polledAt, ...meaningful } = snapshot;
+  return JSON.stringify(canonicalize(meaningful));
+}
+
+// True when the two snapshots differ in anything a reader would care about.
+// A missing/unparseable previous snapshot counts as different.
+export function isMeaningfullyDifferent(previous, next) {
+  const before = snapshotFingerprint(previous);
+  const after = snapshotFingerprint(next);
+  if (before === null || after === null) return true;
+  return before !== after;
+}
+
+// The single commit rule shared by the Worker and the Node CLI: write IF there
+// is no previous snapshot, OR something meaningful changed, OR the previous
+// snapshot's `polledAt` is older than the heartbeat threshold.
+export function shouldCommitSnapshot({ previous, next, now = Date.now(), heartbeatMs = HEARTBEAT_MS } = {}) {
+  if (!previous || typeof previous !== 'object') return { commit: true, reason: 'no-previous-snapshot' };
+  if (isMeaningfullyDifferent(previous, next)) return { commit: true, reason: 'changed' };
+
+  const previousPolledAt = Date.parse(previous.polledAt ?? '');
+  if (!Number.isFinite(previousPolledAt)) return { commit: true, reason: 'previous-polledAt-unreadable' };
+  if (now - previousPolledAt >= heartbeatMs) return { commit: true, reason: 'heartbeat' };
+
+  return { commit: false, reason: 'unchanged' };
 }
 
 async function fetchWithTimeout(url, opts = {}) {

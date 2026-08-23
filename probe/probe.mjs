@@ -27,6 +27,7 @@ import {
   normalizeAppUrl,
   probeHealth,
   probeStatus,
+  shouldCommitSnapshot,
 } from './snapshot.mjs';
 
 // Re-export the pure snapshot builder so existing importers/tests keep working.
@@ -45,10 +46,20 @@ async function readPrevious() {
 }
 
 async function main() {
+  const now = Date.now();
   const [statusResult, healthOk, previous] = await Promise.all([probeStatus(APP_URL), probeHealth(APP_URL), readPrevious()]);
-  const snapshot = buildMonitorSnapshot({ statusResult, healthOk, previous, now: Date.now() });
-  await writeFile(SNAPSHOT_PATH, `${JSON.stringify(snapshot, null, 2)}\n`, 'utf8');
-  console.log(`[probe] ${APP_URL} → overall=${snapshot.overall} reachable=${snapshot.appReachable} source=${snapshot.source}`);
+  const snapshot = buildMonitorSnapshot({ statusResult, healthOk, previous, now });
+
+  // Same rule as the Worker: skip the write unless something meaningful changed
+  // (`polledAt` alone does not count) or the heartbeat is due — so a run that
+  // finds no news leaves the file, and the repo history, untouched.
+  const { commit, reason } = shouldCommitSnapshot({ previous, next: snapshot, now });
+  if (commit) await writeFile(SNAPSHOT_PATH, `${JSON.stringify(snapshot, null, 2)}\n`, 'utf8');
+
+  console.log(
+    `[probe] ${APP_URL} → overall=${snapshot.overall} reachable=${snapshot.appReachable} source=${snapshot.source} ` +
+      `${commit ? 'written' : 'skipped'} (${reason})`,
+  );
 }
 
 // Only run when invoked directly (tests import buildMonitorSnapshot).
