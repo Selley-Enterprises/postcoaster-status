@@ -1,7 +1,7 @@
 import assert from 'node:assert/strict';
 import test from 'node:test';
 
-import { buildMonitorSnapshot } from './probe.mjs';
+import { buildMonitorSnapshot } from './snapshot.mjs';
 
 const NOW = Date.parse('2026-07-26T12:00:00.000Z');
 const liveSnapshot = {

@@ -1,0 +1,21 @@
+# Cloudflare Worker that polls PostCoaster and commits snapshot.json back to this
+# repo via the GitHub Contents API. It runs on Cloudflare — independent of the
+# monitored app's Vercel + Supabase — so the status page stays honest when the
+# app is down. See issue #3 and README "Polling via Cloudflare Worker".
+name = "postcoaster-status-probe"
+main = "worker/index.mjs"
+compatibility_date = "2025-01-01"
+
+# Poll every ~5 minutes (free of GitHub Actions billing now that polling runs
+# here rather than in Actions).
+[triggers]
+crons = ["*/5 * * * *"]
+
+# Non-secret defaults. The GitHub token is NOT here — set it as a secret:
+#   npx wrangler secret put GITHUB_TOKEN
+# (a fine-grained PAT scoped to only this repo with Contents: Read and write).
+[vars]
+GITHUB_OWNER = "Selley-Enterprises"
+GITHUB_REPO = "postcoaster-status"
+GITHUB_BRANCH = "main"
+POSTCOASTER_APP_URL = "https://app.postcoaster.com"
