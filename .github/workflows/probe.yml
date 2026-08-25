@@ -1,10 +1,9 @@
 name: probe
 
-# Polls PostCoaster from GitHub's infrastructure (independent of the app's
-# Vercel + Supabase) and commits the snapshot the status page renders.
+# Polling now runs on an independent Cloudflare Worker (see wrangler.toml and
+# worker/index.mjs; ref issue #3), NOT here. This workflow is kept for manual
+# seeding / emergency runs only — it no longer polls on a schedule.
 on:
-  schedule:
-    - cron: '*/5 * * * *' # GitHub may delay/coalesce; ~5 min is the effective floor
   workflow_dispatch: {}
 
 permissions:
