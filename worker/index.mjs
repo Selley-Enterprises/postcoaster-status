@@ -121,8 +121,9 @@ async function getExistingSnapshot({ owner, repo, branch, token }) {
   return { sha: body.sha || null, previous, raw };
 }
 
-// The `data` branch is the snapshot store. Create it from `main` on first run
-// so a fresh deploy does not fail with "branch not found" before anyone seeds it.
+// The `data` branch is the snapshot store. Create it from `main` *before*
+// reading snapshot.json: a fork of `main` inherits that file, and GitHub
+// requires the inherited blob sha on the first PUT.
 async function ensureBranch({ owner, repo, branch, token, fromBranch = 'main' }) {
   const headers = ghHeaders(token);
   const existing = await fetch(
@@ -175,6 +176,11 @@ async function runProbe(env, { dryRun = false } = {}) {
   if (!cfg.token && !dryRun) throw new Error('GITHUB_TOKEN is not configured (set it as a Worker secret).');
 
   const now = Date.now();
+  // Create `data` BEFORE reading snapshot.json. The branch is forked from
+  // `main`, which already has that file — so a read-then-create-then-PUT
+  // would try to update an existing blob with sha: null and GitHub 422s
+  // ("sha wasn't supplied"). Dry-runs never write, so they skip this.
+  if (!dryRun) await ensureBranch(cfg);
   const [{ sha, previous }, statusResult, healthOk] = await Promise.all([
     getExistingSnapshot(cfg),
     probeStatus(cfg.appUrl),
@@ -201,10 +207,11 @@ async function runProbe(env, { dryRun = false } = {}) {
 
   if (!commit || dryRun) return result;
 
-  await ensureBranch(cfg);
   await putSnapshot({ ...cfg, sha, content: serialized });
   return { ...result, committed: true };
 }
+
+export { runProbe };
 
 export default {
   // The cron is the normal path: it is not caller-controlled, so it needs no

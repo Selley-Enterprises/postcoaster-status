@@ -17,10 +17,20 @@ jobs:
   probe:
     runs-on: ubuntu-latest
     steps:
+      # Probe code from the dispatch ref (normally main) so emergency runs pick
+      # up the current shouldCommitSnapshot / probe logic. `data` only receives
+      # snapshot.json commits and would otherwise freeze the probe at whatever
+      # revision the branch was cut from.
+      - uses: actions/checkout@v4
       - uses: actions/checkout@v4
         with:
-          # Snapshot store. Do not check out `main` — a push there rebuilds Pages.
           ref: data
+          path: .data
+      - name: Use the live snapshot from data
+        run: |
+          if [ -f .data/snapshot.json ]; then
+            cp .data/snapshot.json snapshot.json
+          fi
       - uses: actions/setup-node@v4
         with:
           node-version: 20
@@ -30,6 +40,9 @@ jobs:
         run: node probe/probe.mjs
       - name: Commit snapshot if it changed
         run: |
+          mkdir -p .data
+          cp snapshot.json .data/snapshot.json
+          cd .data
           if ! git diff --quiet -- snapshot.json; then
             git config user.name "status-probe"
             git config user.email "status-probe@users.noreply.github.com"

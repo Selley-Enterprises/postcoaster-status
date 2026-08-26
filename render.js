@@ -50,7 +50,7 @@ const SNAPSHOT_BRANCH = 'data';
 
 function snapshotUrl() {
   const host = typeof location === 'undefined' ? '' : location.hostname;
-  const local = host === '' || host === 'localhost' || host === '127.0.0.1';
+  const local = host === '' || host === 'localhost' || host === '127.0.0.1' || host === '[::1]' || host === '::1';
   if (local) return `./snapshot.json?t=${Date.now()}`;
   return `https://raw.githubusercontent.com/${SNAPSHOT_REPO}/${SNAPSHOT_BRANCH}/snapshot.json?t=${Date.now()}`;
 }

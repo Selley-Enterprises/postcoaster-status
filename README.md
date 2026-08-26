@@ -29,9 +29,13 @@ The poller is a Cloudflare Worker (`worker/index.mjs`, configured by `wrangler.t
 
 GitHub Pages is built from `main`. Every push to `main` runs `pages-build-deployment`, which consumes Actions minutes (~1 billed minute per run) and is rate-limited to roughly **10 builds per hour**. Writing the snapshot to `main` therefore billed a Pages rebuild on every status flicker — that was the Actions cost after polling itself had already moved off Actions (issue #3).
 
-The Worker writes to `data`. `render.js` on the published site loads `https://raw.githubusercontent.com/Selley-Enterprises/postcoaster-status/data/snapshot.json`. Local `localhost` still reads `./snapshot.json` so `python -m http.server` keeps working. Site-file changes on `main` still rebuild Pages; probe commits do not.
+The Worker writes to `data`. `render.js` on the published site loads `https://raw.githubusercontent.com/Selley-Enterprises/postcoaster-status/data/snapshot.json`. Local `localhost` / `127.0.0.1` / `[::1]` still reads `./snapshot.json` so `python -m http.server` keeps working. Site-file changes on `main` still rebuild Pages; probe commits do not.
 
-The Worker creates `data` from `main` if the branch is missing. The emergency Actions `probe` workflow also pushes to `data` (`git push origin HEAD:data`).
+That raw.githubusercontent.com fetch requires the repo to stay **public**. If the repo is ever made private, the published page shows "Snapshot unavailable" — the snapshot is no longer same-origin.
+
+`snapshot.json` on `main` is only a local-dev seed. It freezes at the last merge that touched it and is **not** the live snapshot. `data` grows with each heartbeat / real status change (~24 commits/day, on the order of 13 MB of history per year). That growth is expected; it does not rebuild Pages.
+
+The Worker creates `data` from `main` on the first live write if the branch is missing (it forks the branch **before** reading `snapshot.json`, so it picks up the inherited blob `sha` and the first PUT succeeds). The emergency Actions `probe` workflow checks out the dispatch ref for probe code and `data` into `.data` for the snapshot, then pushes only `snapshot.json` back to `data`.
 
 ### Polling every 5 minutes, committing only when it matters
 
@@ -93,7 +97,7 @@ node probe/probe.mjs                 # probes the live app; writes snapshot.json
 python -m http.server 8080           # or any static server; open http://localhost:8080
 
 # run the tests (list the files explicitly — `node --test probe/` is broken on Node 22)
-node --test probe/probe.test.mjs probe/page.test.mjs probe/snapshot.test.mjs
+node --test probe/probe.test.mjs probe/page.test.mjs probe/snapshot.test.mjs worker/index.test.mjs
 ```
 
 ## What it does NOT do
