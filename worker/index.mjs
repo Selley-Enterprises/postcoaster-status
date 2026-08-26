@@ -4,15 +4,16 @@
 // preserving the monitor's independence: it runs on Cloudflare, entirely
 // separate from PostCoaster's Vercel + Supabase. On a Cron Trigger it probes the
 // app's public endpoints, builds the snapshot with the SHARED, runtime-agnostic
-// logic in ../probe/snapshot.mjs, and commits snapshot.json back to this repo via
-// the GitHub Contents API — so the static GitHub Pages page is unchanged (it
-// still reads same-origin ./snapshot.json).
+// logic in ../probe/snapshot.mjs, and commits snapshot.json to the `data`
+// branch via the GitHub Contents API. The static page on `main` (GitHub Pages)
+// reads that file from raw.githubusercontent.com, so snapshot commits do not
+// rebuild Pages or spend Actions minutes.
 //
 // Config comes from `env`:
 //   GITHUB_TOKEN         (secret)  fine-grained PAT, Contents: Read and write, THIS repo only
 //   GITHUB_OWNER         default "Selley-Enterprises"
 //   GITHUB_REPO          default "postcoaster-status"
-//   GITHUB_BRANCH        default "main"
+//   GITHUB_BRANCH        default "data"  (NOT main — main is the Pages source)
 //   POSTCOASTER_APP_URL  default "https://app.postcoaster.com"
 //   PROBE_TRIGGER_SECRET (secret, OPTIONAL) shared secret required by the HTTP
 //                        handler to commit. Unset → HTTP runs dry-run only.
@@ -39,7 +40,7 @@ function config(env = {}) {
     token: env.GITHUB_TOKEN,
     owner: env.GITHUB_OWNER || 'Selley-Enterprises',
     repo: env.GITHUB_REPO || 'postcoaster-status',
-    branch: env.GITHUB_BRANCH || 'main',
+    branch: env.GITHUB_BRANCH || 'data',
     appUrl: env.POSTCOASTER_APP_URL || DEFAULT_APP_URL,
   };
 }
@@ -120,6 +121,39 @@ async function getExistingSnapshot({ owner, repo, branch, token }) {
   return { sha: body.sha || null, previous, raw };
 }
 
+// The `data` branch is the snapshot store. Create it from `main` *before*
+// reading snapshot.json: a fork of `main` inherits that file, and GitHub
+// requires the inherited blob sha on the first PUT.
+async function ensureBranch({ owner, repo, branch, token, fromBranch = 'main' }) {
+  const headers = ghHeaders(token);
+  const existing = await fetch(
+    `https://api.github.com/repos/${owner}/${repo}/git/ref/heads/${encodeURIComponent(branch)}`,
+    { headers },
+  );
+  if (existing.ok) return;
+  if (existing.status !== 404) {
+    throw new Error(`GitHub GET ref ${branch} failed: HTTP ${existing.status} ${await existing.text()}`);
+  }
+
+  const base = await fetch(
+    `https://api.github.com/repos/${owner}/${repo}/git/ref/heads/${encodeURIComponent(fromBranch)}`,
+    { headers },
+  );
+  if (!base.ok) {
+    throw new Error(`GitHub GET ref ${fromBranch} failed: HTTP ${base.status} ${await base.text()}`);
+  }
+  const { object } = await base.json();
+  const created = await fetch(`https://api.github.com/repos/${owner}/${repo}/git/refs`, {
+    method: 'POST',
+    headers,
+    body: JSON.stringify({ ref: `refs/heads/${branch}`, sha: object.sha }),
+  });
+  // 422 = already exists (lost a create race); treat as success.
+  if (!created.ok && created.status !== 422) {
+    throw new Error(`GitHub POST ref ${branch} failed: HTTP ${created.status} ${await created.text()}`);
+  }
+}
+
 async function putSnapshot({ owner, repo, branch, token, sha, content }) {
   const url = `https://api.github.com/repos/${owner}/${repo}/contents/${SNAPSHOT_PATH}`;
   const payload = {
@@ -142,6 +176,11 @@ async function runProbe(env, { dryRun = false } = {}) {
   if (!cfg.token && !dryRun) throw new Error('GITHUB_TOKEN is not configured (set it as a Worker secret).');
 
   const now = Date.now();
+  // Create `data` BEFORE reading snapshot.json. The branch is forked from
+  // `main`, which already has that file — so a read-then-create-then-PUT
+  // would try to update an existing blob with sha: null and GitHub 422s
+  // ("sha wasn't supplied"). Dry-runs never write, so they skip this.
+  if (!dryRun) await ensureBranch(cfg);
   const [{ sha, previous }, statusResult, healthOk] = await Promise.all([
     getExistingSnapshot(cfg),
     probeStatus(cfg.appUrl),
@@ -151,9 +190,9 @@ async function runProbe(env, { dryRun = false } = {}) {
   const snapshot = buildMonitorSnapshot({ statusResult, healthOk, previous, now });
   const serialized = `${JSON.stringify(snapshot, null, 2)}\n`;
 
-  // `polledAt` is fresh every run, so byte comparison would always differ and we
-  // would commit ~288 times a day. Commit only on a meaningful change, on the
-  // hourly heartbeat, or when there is no previous snapshot at all.
+  // `polledAt` / `uptime90d` are volatile, so byte comparison would always
+  // differ. Commit only on a meaningful change, on the hourly heartbeat, or
+  // when there is no previous snapshot at all.
   const { commit, reason } = shouldCommitSnapshot({ previous, next: snapshot, now });
   const result = {
     committed: false,
@@ -171,6 +210,8 @@ async function runProbe(env, { dryRun = false } = {}) {
   await putSnapshot({ ...cfg, sha, content: serialized });
   return { ...result, committed: true };
 }
+
+export { runProbe };
 
 export default {
   // The cron is the normal path: it is not caller-controlled, so it needs no

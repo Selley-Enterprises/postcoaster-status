@@ -64,10 +64,11 @@ export function buildMonitorSnapshot({ statusResult, healthOk, previous, now }) 
 
 // --- Change detection -------------------------------------------------------
 //
-// `polledAt` is a fresh timestamp on every run, so comparing serialized
-// snapshots byte-for-byte always reports "changed" and commits on every poll.
-// Everything else in the snapshot — `source`, `overall`, `appReachable`,
-// `note`, `services`, `incidents` — is meaningful and must be compared.
+// `polledAt` is a fresh timestamp on every run, and `uptime90d` ticks by 0.01
+// on a rolling window, so comparing serialized snapshots byte-for-byte always
+// reports "changed" and commits on every poll. Everything else — `source`,
+// `overall`, `appReachable`, `note`, service state, `incidents` — is
+// meaningful and must be compared.
 
 // Stable, order-insensitive serialization so key ordering (e.g. a re-parsed
 // snapshot.json vs. a freshly built object) never registers as a change.
@@ -81,12 +82,30 @@ function canonicalize(value) {
   return value;
 }
 
-// A string identity for a snapshot that deliberately ignores `polledAt`.
+// Drop fields that change on every (or almost every) poll but do not mean the
+// status a reader cares about has changed:
+//   * `polledAt` — a fresh timestamp on every run
+//   * `uptime90d` — the app's rolling percentage, which ticks by 0.01 often
+//     enough to look like a "change" and used to trigger a GitHub Pages rebuild
+function stripVolatile(snapshot) {
+  const { polledAt, services, ...rest } = snapshot;
+  return {
+    ...rest,
+    services: Array.isArray(services)
+      ? services.map((service) => {
+          if (!service || typeof service !== 'object') return service;
+          const { uptime90d, ...kept } = service;
+          return kept;
+        })
+      : services,
+  };
+}
+
+// A string identity for a snapshot that deliberately ignores volatile fields.
 // Returns null for anything that isn't a snapshot-shaped object.
 export function snapshotFingerprint(snapshot) {
   if (!snapshot || typeof snapshot !== 'object') return null;
-  const { polledAt, ...meaningful } = snapshot;
-  return JSON.stringify(canonicalize(meaningful));
+  return JSON.stringify(canonicalize(stripVolatile(snapshot)));
 }
 
 // True when the two snapshots differ in anything a reader would care about.

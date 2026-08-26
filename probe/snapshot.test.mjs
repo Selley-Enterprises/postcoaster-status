@@ -23,6 +23,17 @@ test('only polledAt differs → NOT meaningfully different', () => {
   assert.equal(snapshotFingerprint(previous), snapshotFingerprint(next));
 });
 
+test('only uptime90d differs → NOT meaningfully different', () => {
+  const previous = snapshotAt('2026-07-26T11:55:00.000Z');
+  const next = snapshotAt('2026-07-26T12:00:00.000Z', {
+    services: [{ key: 'app', label: 'PostCoaster app', state: 'operational', uptime90d: 99.97 }],
+  });
+  assert.equal(isMeaningfullyDifferent(previous, next), false);
+  const decision = shouldCommitSnapshot({ previous, next, now: NOW });
+  assert.equal(decision.commit, false);
+  assert.equal(decision.reason, 'unchanged');
+});
+
 test('key order does not register as a change', () => {
   const previous = { services: [], incidents: [], note: null, overall: 'operational', source: 'live', appReachable: true, polledAt: '2026-07-26T11:55:00.000Z' };
   const next = snapshotAt('2026-07-26T12:00:00.000Z', { services: [] });

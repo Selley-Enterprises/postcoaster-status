@@ -2,7 +2,8 @@ name: probe
 
 # Polling now runs on an independent Cloudflare Worker (see wrangler.toml and
 # worker/index.mjs; ref issue #3), NOT here. This workflow is kept for manual
-# seeding / emergency runs only — it no longer polls on a schedule.
+# emergency runs against an existing `data` branch — it cannot create `data`
+# and it no longer polls on a schedule.
 on:
   workflow_dispatch: {}
 
@@ -17,7 +18,20 @@ jobs:
   probe:
     runs-on: ubuntu-latest
     steps:
+      # Probe code from the dispatch ref (normally main) so emergency runs pick
+      # up the current shouldCommitSnapshot / probe logic. `data` only receives
+      # snapshot.json commits and would otherwise freeze the probe at whatever
+      # revision the branch was cut from.
       - uses: actions/checkout@v4
+      - uses: actions/checkout@v4
+        with:
+          ref: data
+          path: .data
+      - name: Use the live snapshot from data
+        run: |
+          if [ -f .data/snapshot.json ]; then
+            cp .data/snapshot.json snapshot.json
+          fi
       - uses: actions/setup-node@v4
         with:
           node-version: 20
@@ -27,12 +41,16 @@ jobs:
         run: node probe/probe.mjs
       - name: Commit snapshot if it changed
         run: |
-          if ! git diff --quiet -- snapshot.json; then
+          cp snapshot.json .data/snapshot.json
+          cd .data
+          git add snapshot.json
+          # --cached so a brand-new untracked snapshot.json counts as a change
+          # (plain `git diff` ignores untracked files and would no-op).
+          if ! git diff --cached --quiet -- snapshot.json; then
             git config user.name "status-probe"
             git config user.email "status-probe@users.noreply.github.com"
-            git add snapshot.json
             git commit -m "probe: update snapshot [skip ci]"
-            git push
+            git push origin HEAD:data
           else
             echo "No change."
           fi
