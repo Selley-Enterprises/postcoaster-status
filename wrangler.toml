@@ -1,7 +1,7 @@
-# Cloudflare Worker that polls PostCoaster and commits snapshot.json back to this
-# repo via the GitHub Contents API. It runs on Cloudflare — independent of the
-# monitored app's Vercel + Supabase — so the status page stays honest when the
-# app is down. See issue #3 and README "Polling via Cloudflare Worker".
+# Cloudflare Worker that polls PostCoaster and commits snapshot.json to the
+# `data` branch via the GitHub Contents API. Writing to `data` (not `main`)
+# keeps GitHub Pages from rebuilding on every probe, which is what was burning
+# Actions minutes. See issue #3 and README "Polling via Cloudflare Worker".
 name = "postcoaster-status-probe"
 main = "worker/index.mjs"
 compatibility_date = "2025-01-01"
@@ -38,5 +38,6 @@ crons = ["*/5 * * * *"]
 [vars]
 GITHUB_OWNER = "Selley-Enterprises"
 GITHUB_REPO = "postcoaster-status"
-GITHUB_BRANCH = "main"
+# Snapshot store. Must NOT be the Pages source branch (`main`).
+GITHUB_BRANCH = "data"
 POSTCOASTER_APP_URL = "https://app.postcoaster.com"

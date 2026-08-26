@@ -1,7 +1,10 @@
-// Renders ./snapshot.json (written by the probe) using the SAME markup + CSS as
-// the in-app status page (src/status/ in the PostCoaster repo), so both surfaces
-// look identical. status.css is copied verbatim from there — re-copy that one
-// file to re-sync the design.
+// Renders the probe snapshot using the SAME markup + CSS as the in-app status
+// page (src/status/ in the PostCoaster repo), so both surfaces look identical.
+// status.css is copied verbatim from there — re-copy that one file to re-sync
+// the design.
+//
+// In production the snapshot lives on the `data` branch (not `main`) so probe
+// commits do not rebuild GitHub Pages. Locally we keep reading ./snapshot.json.
 //
 // Plain DOM, no framework, no build step: GitHub Pages serves this as-is, so the
 // status page keeps working when everything else is on fire. All text goes in via
@@ -41,6 +44,16 @@ const INCIDENT_STATUS_LABELS = {
 };
 
 const $ = (id) => document.getElementById(id);
+
+const SNAPSHOT_REPO = 'Selley-Enterprises/postcoaster-status';
+const SNAPSHOT_BRANCH = 'data';
+
+function snapshotUrl() {
+  const host = typeof location === 'undefined' ? '' : location.hostname;
+  const local = host === '' || host === 'localhost' || host === '127.0.0.1';
+  if (local) return `./snapshot.json?t=${Date.now()}`;
+  return `https://raw.githubusercontent.com/${SNAPSHOT_REPO}/${SNAPSHOT_BRANCH}/snapshot.json?t=${Date.now()}`;
+}
 
 function el(tag, cls, text) {
   const node = document.createElement(tag);
@@ -286,7 +299,7 @@ function renderUnavailable(message) {
 
 async function load() {
   try {
-    const res = await fetch(`./snapshot.json?t=${Date.now()}`, { cache: 'no-store' });
+    const res = await fetch(snapshotUrl(), { cache: 'no-store' });
     if (!res.ok) throw new Error(`HTTP ${res.status}`);
     renderSnapshot(await res.json());
   } catch (err) {

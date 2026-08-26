@@ -18,6 +18,9 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+        with:
+          # Snapshot store. Do not check out `main` — a push there rebuilds Pages.
+          ref: data
       - uses: actions/setup-node@v4
         with:
           node-version: 20
@@ -32,7 +35,7 @@ jobs:
             git config user.email "status-probe@users.noreply.github.com"
             git add snapshot.json
             git commit -m "probe: update snapshot [skip ci]"
-            git push
+            git push origin HEAD:data
           else
             echo "No change."
           fi
