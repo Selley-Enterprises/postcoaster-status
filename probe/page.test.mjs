@@ -31,4 +31,6 @@ test('emergency probe runs dispatch-ref code and writes only to data', async () 
   assert.match(yml, /path: \.data/);
   assert.match(yml, /ref: data/);
   assert.match(yml, /cp snapshot\.json \.data\/snapshot\.json/);
+  assert.match(yml, /git add snapshot\.json[\s\S]*git diff --cached --quiet -- snapshot\.json/);
+  assert.doesNotMatch(yml, /mkdir -p \.data/);
 });

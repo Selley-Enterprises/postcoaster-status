@@ -88,7 +88,7 @@ The cron cadence is `*/5 * * * *` (every 5 minutes). The GitHub Action **no long
    ```
    Enable **Enforce HTTPS** once the cert issues.
 4. **Point it at the app (optional):** defaults to `https://app.postcoaster.com`. To override for the Cloudflare Worker, set `POSTCOASTER_APP_URL` in `wrangler.toml` `[vars]`; for the manual Actions run, set an Actions **variable** `POSTCOASTER_APP_URL` (Settings → Secrets and variables → Actions → Variables).
-5. **Seed the `data` branch:** the Worker creates it on first write if needed. To seed by hand: `git branch data main && git push origin data`, or run the **probe** workflow (Actions tab → **probe** → **Run workflow**) — it pushes to `data`, not `main`. The cron then updates `data` within ~5 minutes. (There is no public Worker URL to hit — `workers_dev = false`; on-demand HTTP runs need a route plus `PROBE_TRIGGER_SECRET`, see above.)
+5. **Seed the `data` branch:** the Worker creates it on first write if needed. To seed by hand: `git branch data main && git push origin data`. The cron then updates `data` within ~5 minutes. The emergency **probe** workflow can refresh `snapshot.json` on an existing `data` branch; it cannot create the branch (its checkout of `ref: data` fails if `data` is missing). (There is no public Worker URL to hit — `workers_dev = false`; on-demand HTTP runs need a route plus `PROBE_TRIGGER_SECRET`, see above.)
 
 ## Local development
 
