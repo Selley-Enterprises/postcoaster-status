@@ -1,0 +1,30 @@
+# This repository is PUBLIC, so the Cloudflare Wrangler entries below are the
+# ones that actually matter: `.dev.vars` holds the Worker's local secrets
+# (GITHUB_TOKEN, PROBE_TRIGGER_SECRET) and `.wrangler/` holds local state and
+# cache. Either one committed by accident would be world-readable.
+#
+# Note: snapshot.json is deliberately NOT ignored. It is committed by the probe
+# and is what the status page renders.
+
+# Cloudflare Wrangler: local secrets and local state/cache
+.dev.vars
+.dev.vars.*
+.wrangler/
+
+# Environment files (defensive: this repo does not use them today)
+.env
+.env.*
+
+# Node (no package.json today, but in case dependencies are ever added)
+node_modules/
+
+# Logs
+*.log
+npm-debug.log*
+
+# OS and editor cruft
+.DS_Store
+Thumbs.db
+*.swp
+.idea/
+.vscode/
