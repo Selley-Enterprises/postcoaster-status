@@ -1,5 +1,5 @@
 {
-  "polledAt": "2026-09-13T18:01:06.201Z",
+  "polledAt": "2026-09-13T19:01:51.872Z",
   "appReachable": true,
   "source": "live",
   "overall": "operational",
@@ -15,7 +15,7 @@
       "key": "publishing",
       "label": "Scheduled publishing",
       "state": "operational",
-      "uptime90d": 97.13
+      "uptime90d": 97.14
     },
     {
       "key": "ai_drafting",
@@ -33,7 +33,7 @@
       "key": "campaigns",
       "label": "Campaigns",
       "state": "operational",
-      "uptime90d": 96.03
+      "uptime90d": 96.04
     }
   ],
   "incidents": []
