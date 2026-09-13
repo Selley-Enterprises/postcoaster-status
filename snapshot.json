@@ -1,8 +1,8 @@
 {
-  "polledAt": "2026-09-13T22:20:52.186Z",
+  "polledAt": "2026-09-13T22:25:50.884Z",
   "appReachable": true,
   "source": "live",
-  "overall": "down",
+  "overall": "operational",
   "note": null,
   "services": [
     {
@@ -14,7 +14,7 @@
     {
       "key": "publishing",
       "label": "Scheduled publishing",
-      "state": "down",
+      "state": "operational",
       "uptime90d": 97.14
     },
     {
@@ -32,7 +32,7 @@
     {
       "key": "campaigns",
       "label": "Campaigns",
-      "state": "down",
+      "state": "operational",
       "uptime90d": 96.04
     }
   ],
