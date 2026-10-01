@@ -1,8 +1,8 @@
 {
-  "polledAt": "2026-10-01T13:05:33.645Z",
+  "polledAt": "2026-10-01T13:40:51.249Z",
   "appReachable": true,
   "source": "live",
-  "overall": "operational",
+  "overall": "down",
   "note": null,
   "services": [
     {
@@ -14,8 +14,8 @@
     {
       "key": "publishing",
       "label": "Scheduled publishing",
-      "state": "operational",
-      "uptime90d": 97.29
+      "state": "down",
+      "uptime90d": 97.28
     },
     {
       "key": "ai_drafting",
@@ -32,8 +32,8 @@
     {
       "key": "campaigns",
       "label": "Campaigns",
-      "state": "operational",
-      "uptime90d": 96.36
+      "state": "down",
+      "uptime90d": 96.35
     }
   ],
   "incidents": []
