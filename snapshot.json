@@ -1,5 +1,5 @@
 {
-  "polledAt": "2026-10-01T04:45:28.357Z",
+  "polledAt": "2026-10-01T05:45:28.940Z",
   "appReachable": true,
   "source": "live",
   "overall": "operational",
@@ -33,7 +33,7 @@
       "key": "campaigns",
       "label": "Campaigns",
       "state": "operational",
-      "uptime90d": 96.34
+      "uptime90d": 96.35
     }
   ],
   "incidents": []
