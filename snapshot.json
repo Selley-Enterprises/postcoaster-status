@@ -1,8 +1,8 @@
 {
-  "polledAt": "2026-10-08T19:55:41.388Z",
+  "polledAt": "2026-10-08T20:10:49.996Z",
   "appReachable": true,
   "source": "live",
-  "overall": "operational",
+  "overall": "down",
   "note": null,
   "services": [
     {
@@ -20,7 +20,7 @@
     {
       "key": "ai_drafting",
       "label": "AI drafting",
-      "state": "operational",
+      "state": "down",
       "uptime90d": 99.08
     },
     {
@@ -32,7 +32,7 @@
     {
       "key": "campaigns",
       "label": "Campaigns",
-      "state": "operational",
+      "state": "down",
       "uptime90d": 96.46
     }
   ],
