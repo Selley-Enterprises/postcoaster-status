@@ -1,5 +1,5 @@
 {
-  "polledAt": "2026-11-09T20:30:47.537Z",
+  "polledAt": "2026-11-09T21:30:47.633Z",
   "appReachable": true,
   "source": "live",
   "overall": "operational",
@@ -15,7 +15,7 @@
       "key": "publishing",
       "label": "Scheduled publishing",
       "state": "operational",
-      "uptime90d": 97.07
+      "uptime90d": 97.06
     },
     {
       "key": "ai_drafting",
