@@ -1,9 +1,9 @@
 {
-  "polledAt": "2026-11-25T21:35:45.396Z",
+  "polledAt": "2026-11-25T22:00:45.398Z",
   "appReachable": true,
-  "source": "live",
-  "overall": "operational",
-  "note": null,
+  "source": "stale",
+  "overall": "degraded",
+  "note": "Showing the last known status — live detail is temporarily unavailable.",
   "services": [
     {
       "key": "app",
